@@ -1,0 +1,37 @@
+version: '2'
+services:
+    nginx:
+        image: nginx:latest
+        volumes:
+            - LEMP/hosts:/etc/nginx/conf.d
+            - LEMP/www:/var/www
+            - LEMP/logs:/var/log/nginx
+        ports:
+            - "8000:80"
+        links:
+            - php
+    php:
+        build: /images/php
+        volumes:
+            - LEMP/www:/var/www
+        links:
+            - mysql
+    mysql:
+        image: mariadb
+        volumes:
+            - LEMP/mysql:/var/lib/mysql
+        ports:
+            - "3306:3306"
+        environment:
+            MYSQL_ROOT_PASSWORD: 
+    pma:
+        image: phpmyadmin/phpmyadmin
+        ports:
+            - 8183:80
+        restart: always
+        links:
+            - mysql:mysql
+        environment:
+            PMA_HOST: mysql
+            MYSQL_USERNAME: root
+            MYSQL_ROOT_PASSWORD: password
